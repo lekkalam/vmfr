@@ -1,4 +1,8 @@
 class User < ActiveRecord::Base
+  
+  validates_presence_of :uid, :provider
+  validates_uniqueness_of :uid, :scope => :provider
+
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_initialize.tap do |user|
       user.provider = auth.provider
@@ -7,6 +11,7 @@ class User < ActiveRecord::Base
       user.oauth_token = auth.credentials.token
       user.oauth_expires_at = Time.at(auth.credentials.expires_at)
       user.save!
+      #binding.pry
     end
   end
 end
